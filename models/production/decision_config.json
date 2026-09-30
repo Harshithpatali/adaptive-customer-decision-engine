@@ -1,0 +1,9 @@
+{
+  "policy_version": "value_max_v1",
+  "treatment_costs": {
+    "No E-Mail": 0.0,
+    "Womens E-Mail": 0.02,
+    "Mens E-Mail": 0.02
+  },
+  "uncertainty_method": "bootstrap-policy-ci-and-model-stability"
+}

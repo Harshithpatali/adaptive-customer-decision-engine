@@ -1,0 +1,29 @@
+{
+  "features": [
+    "recency",
+    "history_segment",
+    "history",
+    "mens",
+    "womens",
+    "zip_code",
+    "newbie",
+    "channel"
+  ],
+  "categorical": [
+    "history_segment",
+    "zip_code",
+    "channel"
+  ],
+  "numeric": [
+    "recency",
+    "history",
+    "mens",
+    "womens",
+    "newbie"
+  ],
+  "actions": [
+    "No E-Mail",
+    "Womens E-Mail",
+    "Mens E-Mail"
+  ]
+}

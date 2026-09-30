@@ -1,0 +1,7 @@
+policy_version: value_max_v1
+treatment_costs:
+  No E-Mail: 0.0
+  Womens E-Mail: 0.02
+  Mens E-Mail: 0.02
+uncertainty:
+  method: bootstrap_policy_ci_and_ensemble_action_stability

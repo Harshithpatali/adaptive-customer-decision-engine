@@ -1,0 +1,29 @@
+{
+  "seed": 42,
+  "python": "3.13.5",
+  "dataset_rows": 64000,
+  "best_response": "xgboost",
+  "best_revenue": "lightgbm",
+  "calibration": "isotonic",
+  "training_timestamp": "2026-09-30T17:53:12Z",
+  "git_commit": "local-build",
+  "artifacts": [
+    "revenue_ensemble_2.joblib",
+    "revenue_ensemble_1.joblib",
+    "feature_schema.json",
+    "uplift_mens_e-mail_treatment.joblib",
+    "uplift_womens_e-mail_control.joblib",
+    "training_manifest.json",
+    "response_ensemble_0.joblib",
+    "revenue_model.joblib",
+    "uplift_womens_e-mail_treatment.joblib",
+    "calibrator.joblib",
+    "response_ensemble_2.joblib",
+    "response_model.joblib",
+    "response_ensemble_1.joblib",
+    "revenue_ensemble_0.joblib",
+    "uplift_mens_e-mail_control.joblib",
+    "decision_config.json",
+    "model_registry.json"
+  ]
+}

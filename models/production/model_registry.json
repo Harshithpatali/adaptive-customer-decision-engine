@@ -1,0 +1,31 @@
+{
+  "status": "APPROVED",
+  "version": "acdx-best-xgb-2.0.0",
+  "production_response_model": {
+    "algorithm": "XGBoost",
+    "artifact": "response_model.joblib",
+    "selection": "best validated response model; no ensemble"
+  },
+  "uplift_model": {
+    "algorithm": "T-Learner",
+    "base_algorithm": "LogisticRegression",
+    "artifacts": "uplift_*"
+  },
+  "revenue_model": {
+    "algorithm": "LightGBM",
+    "artifact": "revenue_model.joblib"
+  },
+  "policy": {
+    "version": "value_max_v1",
+    "treatment_costs": {
+      "No E-Mail": 0.0,
+      "Womens E-Mail": 0.02,
+      "Mens E-Mail": 0.02
+    }
+  },
+  "reported_response_metrics": {
+    "test_roc_auc": 0.6676941202927387,
+    "test_pr_auc": 0.019364064718361898
+  },
+  "production_rule": "Only the selected production artifacts are loaded. No candidate models, model search, ensemble, SMOTE, CV, or hyperparameter optimization occurs at inference time."
+}

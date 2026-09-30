@@ -1,0 +1,16 @@
+{
+  "dataset_rows": 64000,
+  "treatment_arms": {
+    "Womens E-Mail": 21387,
+    "Mens E-Mail": 21307,
+    "No E-Mail": 21306
+  },
+  "conversion_total": 578,
+  "visit_total": 9394,
+  "configured_campaign_costs": {
+    "No E-Mail": 0.0,
+    "Mens E-Mail": 0.02,
+    "Womens E-Mail": 0.02
+  },
+  "note": "Campaign costs are configurable policy assumptions; observed spend comes from the dataset."
+}
