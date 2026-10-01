@@ -1,0 +1,7 @@
+treatment,model,qini,uplift_at_20pct,auuc,n,evaluation
+Mens E-Mail,S-Learner,133.02,0.00369,0.00566,6392,out_of_fold
+Mens E-Mail,T-Learner,126.92,0.00711,0.00563,6392,out_of_fold
+Mens E-Mail,X-Learner,138.02,0.00708,0.00687,6392,out_of_fold
+Womens E-Mail,S-Learner,69.04,0.00395,0.00419,6405,out_of_fold
+Womens E-Mail,T-Learner,73.58,0.00370,0.00292,6405,out_of_fold
+Womens E-Mail,X-Learner,77.81,0.00618,0.00423,6405,out_of_fold
