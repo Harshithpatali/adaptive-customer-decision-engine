@@ -1,0 +1,11 @@
+{
+  "value": 1.25786,
+  "ci_low": 1.03337,
+  "ci_high": 1.47835,
+  "standard_error": 0.11661,
+  "effective_sample_size": 63999.8,
+  "cross_fit_folds": 5,
+  "evaluation_population": 64000,
+  "classification": "OFFLINE RESEARCH / MODEL ESTIMATE",
+  "source_run_id": 36829950961
+}
