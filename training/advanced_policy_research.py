@@ -149,3 +149,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Reproducibility note: this file is also executable by the advanced-policy GitHub Actions workflow.
