@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+from ui import inject_css, hero, metric_card, plotly_bar
+
+inject_css()
 
 st.set_page_config(page_title="ACDX | Decision Intelligence", page_icon="◈", layout="wide", initial_sidebar_state="expanded")
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,9 +36,7 @@ if mp.exists():
     import json
     manifest = json.loads(mp.read_text())
 
-st.markdown('<div class="acdx-kicker">ACDX • Adaptive Customer Decision Engine</div>', unsafe_allow_html=True)
-st.title("Executive Decision Center")
-st.markdown("A production decision layer connecting randomized experimentation, response modeling, uplift estimation, revenue modeling, and campaign policy.")
+hero("Decision Intelligence Center","Causal experimentation + machine learning + revenue optimization + individualized decisioning",["RANDOMIZED EXPERIMENT","UPLIFT MODELING","VALUE OPTIMIZATION","PRODUCTION API"])
 
 with st.sidebar:
     st.markdown("### ACDX")
@@ -54,10 +55,10 @@ net_value = econ["net_observed_value"].sum() if not econ.empty else 0
 conv = manifest.get("conversion_total", int(econ["conversions"].sum()) if not econ.empty else 0)
 
 c1,c2,c3,c4=st.columns(4)
-c1.markdown(card("Experiment population", f"{total:,}", "Randomized Hillstrom population", "accent"), unsafe_allow_html=True)
-c2.markdown(card("Observed spend", "$" + f"{total_spend:,.0f}", "Across all experiment arms"), unsafe_allow_html=True)
-c3.markdown(card("Observed net value", "$" + f"{net_value:,.0f}", "After configured campaign cost"), unsafe_allow_html=True)
-c4.markdown(card("Conversions", f"{conv:,}", "Observed experiment outcome"), unsafe_allow_html=True)
+metric_card("Experiment population",f"{total:,}","Randomized Hillstrom population")
+metric_card("Observed spend","$"+f"{total_spend:,.0f}","Across all experiment arms")
+metric_card("Observed net value","$"+f"{net_value:,.0f}","After configured campaign cost")
+metric_card("Conversions",f"{conv:,}","Observed experiment outcome")
 
 st.markdown("### What the experiment measured")
 if not effects.empty:
@@ -72,7 +73,7 @@ if not econ.empty:
     with a:
         st.dataframe(econ[["action","customers","visits","conversions","observed_spend","campaign_cost","net_observed_value"]].style.format({"observed_spend":"{:,.2f}","campaign_cost":"{:,.2f}","net_observed_value":"{:,.2f}"}), use_container_width=True, hide_index=True)
     with b:
-        st.bar_chart(econ.set_index("action")["net_observed_value"])
+        plotly_bar(econ,"action","net_observed_value","Observed net value by campaign")
 else:
     st.info("Campaign economics report not available.")
 
