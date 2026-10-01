@@ -2,9 +2,11 @@ import json
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+from ui import inject_css, hero, metric_card, plotly_bar
+
+inject_css()
 ROOT=Path(__file__).resolve().parents[2]
-st.title("Experiment & Causal Analytics")
-st.caption("Observed evidence from the randomized Hillstrom email experiment.")
+hero("Experiment & Causal Analytics","Turn randomized campaign assignment into measurable causal evidence.",["A/B TEST","ATE","BOOTSTRAP CI","STATISTICAL TESTS"])
 mp=ROOT/"reports/statistics/experiment_manifest.json"; ef=ROOT/"reports/statistics/experiment_effects.csv"
 if not mp.exists() or not ef.exists(): st.warning("Experiment reports are not present."); st.stop()
 manifest=json.loads(mp.read_text()); df=pd.read_csv(ef)
