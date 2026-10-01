@@ -15,6 +15,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -40,6 +41,22 @@ def estimator_factory():
     return Pipeline([("pre", pre), ("model", LogisticRegression(max_iter=2000, C=1.0))])
 
 
+def effect_estimator_factory():
+    pre = ColumnTransformer([
+        ("num", Pipeline([("imp", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUM),
+        ("cat", Pipeline([("imp", SimpleImputer(strategy="most_frequent")), ("oh", OneHotEncoder(handle_unknown="ignore"))]), CAT),
+    ])
+    return Pipeline([("pre", pre), ("model", RandomForestRegressor(n_estimators=80, min_samples_leaf=20, random_state=42, n_jobs=-1))])
+
+
+def value_estimator_factory():
+    pre = ColumnTransformer([
+        ("num", Pipeline([("imp", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUM),
+        ("cat", Pipeline([("imp", SimpleImputer(strategy="most_frequent")), ("oh", OneHotEncoder(handle_unknown="ignore"))]), CAT),
+    ])
+    return Pipeline([("pre", pre), ("model", RandomForestRegressor(n_estimators=80, min_samples_leaf=20, random_state=42, n_jobs=-1))])
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--bootstrap", type=int, default=200)
@@ -62,7 +79,7 @@ def main():
         tp = treatment.loc[mask].reset_index(drop=True)
         yp = y.loc[mask].reset_index(drop=True)
         for name, cls in [("S-Learner", SLearner), ("T-Learner", TLearner), ("X-Learner", XLearner)]:
-            model = cls(estimator_factory).fit(xp, tp, yp, action, "No E-Mail")
+            model = (XLearner(estimator_factory, effect_estimator_factory) if name == "X-Learner" else cls(estimator_factory)).fit(xp, tp, yp, action, "No E-Mail")
             uplift = model.predict_uplift(xp)
             metrics = uplift_metrics(yp.to_numpy(), (tp == action).astype(int).to_numpy(), uplift)
             learner_rows.append({"treatment": action, "model": name, **metrics, "n": len(xp)})
@@ -95,10 +112,13 @@ def main():
         boot = frame.iloc[idx]
         boot_t = treatment.reset_index(drop=True).iloc[idx]
         boot_y = y.reset_index(drop=True).iloc[idx]
+        boot_spend = df["spend"].reset_index(drop=True).iloc[idx]
         mask = boot_t.eq(action).to_numpy()
-        model = estimator_factory()
-        model.fit(boot.loc[mask], boot_y.loc[mask])
-        return model.predict_proba(stability_X)[:, 1]
+        response = estimator_factory()
+        response.fit(boot.loc[mask], boot_y.loc[mask])
+        value = value_estimator_factory()
+        value.fit(boot.loc[mask], boot_spend.loc[mask])
+        return response.predict_proba(stability_X)[:, 1] * np.maximum(0.0, value.predict(stability_X)) - costs[action]
     stability = bootstrap_action_stability(stability_X, stability_actions, fit_predict_values, args.bootstrap, seed=42)
     stability.to_csv(OUT / "decision_stability.csv", index=False)
 
@@ -117,6 +137,7 @@ def main():
         "cross_fit_folds": args.folds,
         "bootstrap_replicates": args.bootstrap,
         "uplift_models": ["S-Learner", "T-Learner", "X-Learner"],
+        "decision_stability_value": "bootstrap response probability × expected spend − treatment cost",
         "policy_evaluator": "doubly_robust",
         "classification": "OFFLINE RESEARCH / MODEL ESTIMATE",
         "production_artifacts_modified": False,
