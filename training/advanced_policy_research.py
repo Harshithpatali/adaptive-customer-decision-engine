@@ -21,7 +21,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src.evaluation.doubly_robust import evaluate_policy_dr
 from src.evaluation.decision_stability import bootstrap_action_stability
-from src.models.uplift.learners import SLearner, TLearner, XLearner, uplift_metrics
+from src.models.uplift.learners import SLearner, TLearner, XLearner, cross_fitted_uplift_scores, uplift_metrics
 from src.policy.frontier import causal_incremental_scores, policy_frontier
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,11 +79,14 @@ def main():
         xp = X.loc[mask].reset_index(drop=True)
         tp = treatment.loc[mask].reset_index(drop=True)
         yp = y.loc[mask].reset_index(drop=True)
-        for name, cls in [("S-Learner", SLearner), ("T-Learner", TLearner), ("X-Learner", XLearner)]:
-            model = (XLearner(estimator_factory, effect_estimator_factory) if name == "X-Learner" else cls(estimator_factory)).fit(xp, tp, yp, action, "No E-Mail")
-            uplift = model.predict_uplift(xp)
+        for name in ["S-Learner", "T-Learner", "X-Learner"]:
+            uplift = cross_fitted_uplift_scores(
+                xp, tp, yp, action, name, estimator_factory,
+                effect_estimator_factory if name == "X-Learner" else None,
+                n_splits=args.folds, random_state=42
+            )
             metrics = uplift_metrics(yp.to_numpy(), (tp == action).astype(int).to_numpy(), uplift)
-            learner_rows.append({"treatment": action, "model": name, **metrics, "n": len(xp)})
+            learner_rows.append({"treatment": action, "model": name, **metrics, "n": len(xp), "evaluation": "out_of_fold"})
             uplift_store[(action, name)] = (xp, tp, uplift)
     pd.DataFrame(learner_rows).to_csv(OUT / "uplift_learner_comparison.csv", index=False)
 
