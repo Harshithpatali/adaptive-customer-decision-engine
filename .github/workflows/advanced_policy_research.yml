@@ -1,0 +1,43 @@
+name: Advanced Policy Research
+
+on:
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        description: "Bootstrap refits for decision stability"
+        required: false
+        default: "50"
+      folds:
+        description: "Cross-fitting folds"
+        required: false
+        default: "5"
+  push:
+    paths:
+      - "training/advanced_policy_research.py"
+      - "src/evaluation/**"
+      - "src/models/uplift/**"
+      - "src/policy/frontier.py"
+      - "data/raw/hillstrom_raw.csv"
+      - "requirements.txt"
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install research dependencies
+        run: pip install -r requirements.txt
+      - name: Run advanced policy research
+        env:
+          BOOTSTRAP: ${{ github.event.inputs.bootstrap || '50' }}
+          FOLDS: ${{ github.event.inputs.folds || '5' }}
+        run: python training/advanced_policy_research.py --folds "$FOLDS" --bootstrap "$BOOTSTRAP"
+      - name: Upload research artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: acdx-advanced-policy-research
+          path: reports/advanced_policy/
