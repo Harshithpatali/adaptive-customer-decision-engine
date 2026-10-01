@@ -35,7 +35,7 @@ jobs:
         env:
           BOOTSTRAP: ${{ github.event.inputs.bootstrap || '50' }}
           FOLDS: ${{ github.event.inputs.folds || '5' }}
-        run: python training/advanced_policy_research.py --folds "$FOLDS" --bootstrap "$BOOTSTRAP"
+        run: PYTHONPATH="$GITHUB_WORKSPACE" python -m training.advanced_policy_research --folds "$FOLDS" --bootstrap "$BOOTSTRAP"
       - name: Upload research artifacts
         uses: actions/upload-artifact@v4
         with:
