@@ -9,6 +9,12 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
+
+# Make repository-root imports work both locally and in GitHub Actions.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import numpy as np
 import pandas as pd
@@ -24,7 +30,6 @@ from src.evaluation.decision_stability import bootstrap_action_stability
 from src.models.uplift.learners import SLearner, TLearner, XLearner, cross_fitted_uplift_scores, uplift_metrics
 from src.policy.frontier import causal_incremental_scores, policy_frontier
 
-ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data/raw/hillstrom_raw.csv"
 OUT = ROOT / "reports/advanced_policy"
 FEATURES = ["recency", "history_segment", "history", "mens", "womens", "zip_code", "newbie", "channel"]
