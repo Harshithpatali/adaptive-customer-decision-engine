@@ -68,6 +68,7 @@ def main():
     X = df[FEATURES].copy()
     treatment = df["segment"].copy()
     y = df["conversion"].astype(int)
+    spend = df["spend"].astype(float)
     costs = {"No E-Mail": 0.0, "Womens E-Mail": 0.02, "Mens E-Mail": 0.02}
 
     # Pairwise S/T/X comparison against randomized control.
@@ -86,22 +87,19 @@ def main():
             uplift_store[(action, name)] = (xp, tp, uplift)
     pd.DataFrame(learner_rows).to_csv(OUT / "uplift_learner_comparison.csv", index=False)
 
-    # Cross-fitted nuisance models + DR evaluation of a simple X-learner policy.
-    # Fit pairwise X-learners on the full research sample to define the policy,
-    # while the DR outcome models remain strictly cross-fitted.
-    pair_uplift = {}
-    for action in ["Mens E-Mail", "Womens E-Mail"]:
-        model = XLearner(estimator_factory).fit(X, treatment, y, action, "No E-Mail")
-        pair_uplift[action] = model.predict_uplift(X)
-    potential = pd.DataFrame({"No E-Mail": np.zeros(len(df))})
-    # Use cross-fitted response probabilities for a decision policy rather than
-    # in-sample outcome predictions.
+    # Cross-fitted nuisance models + DR evaluation on monetary spend.
+    # Costs are denominated in dollars, so the policy objective must also be
+    # monetary; conversion probabilities are used separately for uplift research.
     from src.evaluation.cross_fitting import cross_fit_potential_outcomes
-    m, prop = cross_fit_potential_outcomes(X, treatment, y, ACTIONS, estimator_factory, args.folds, 42)
-    policy = pd.Series(np.where(m["Mens E-Mail"] >= m["Womens E-Mail"], "Mens E-Mail", "Womens E-Mail"), index=df.index)
-    policy = pd.Series(np.where(m["Mens E-Mail"].to_numpy() < m["No E-Mail"].to_numpy() + costs["Mens E-Mail"], "No E-Mail", policy), index=df.index)
-    policy = pd.Series(np.where(m["Womens E-Mail"].to_numpy() < m["No E-Mail"].to_numpy() + costs["Womens E-Mail"], "No E-Mail", policy), index=df.index)
-    dr = evaluate_policy_dr(X, treatment, y, policy, ACTIONS, estimator_factory, args.folds, 1000, 42)
+    spend_predictions, prop = cross_fit_potential_outcomes(
+        X, treatment, spend, ACTIONS, value_estimator_factory, args.folds, 42, "predict"
+    )
+    net_values = pd.DataFrame({a: spend_predictions[a] - costs[a] for a in ACTIONS})
+    policy = net_values.idxmax(axis=1)
+    dr = evaluate_policy_dr(
+        X, treatment, spend, policy, ACTIONS, value_estimator_factory,
+        args.folds, 1000, 42, prediction_method="predict"
+    )
     (OUT / "doubly_robust_policy.json").write_text(json.dumps(dr, indent=2))
 
     # Bootstrap decision stability. Restricting to a reproducible sample keeps
@@ -118,14 +116,14 @@ def main():
         response.fit(boot.loc[mask], boot_y.loc[mask])
         value = value_estimator_factory()
         value.fit(boot.loc[mask], boot_spend.loc[mask])
-        return response.predict_proba(stability_X)[:, 1] * np.maximum(0.0, value.predict(stability_X)) - costs[action]
+        return np.maximum(0.0, value.predict(stability_X)) - costs[action]
     stability = bootstrap_action_stability(stability_X, stability_actions, fit_predict_values, args.bootstrap, seed=42)
     stability.to_csv(OUT / "decision_stability.csv", index=False)
 
     # Causal incremental-value frontier using cross-fitted potential outcomes.
     # The control outcome is the no-email counterfactual; treatment scores are
     # incremental relative to that same baseline.
-    potential = m.copy()
+    potential = spend_predictions.copy()
     scores = causal_incremental_scores(potential, costs)
     frontier = policy_frontier(scores)
     scores.to_csv(OUT / "causal_incremental_scores.csv", index=False)
@@ -137,7 +135,7 @@ def main():
         "cross_fit_folds": args.folds,
         "bootstrap_replicates": args.bootstrap,
         "uplift_models": ["S-Learner", "T-Learner", "X-Learner"],
-        "decision_stability_value": "bootstrap response probability × expected spend − treatment cost",
+        "decision_stability_value": "bootstrap expected spend − treatment cost",
         "policy_evaluator": "doubly_robust",
         "classification": "OFFLINE RESEARCH / MODEL ESTIMATE",
         "production_artifacts_modified": False,
