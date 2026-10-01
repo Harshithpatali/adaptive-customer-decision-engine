@@ -1,0 +1,6 @@
+{
+  "conversion_ci":[0.0107734375,0.0190625],
+  "spend_ci":[1.152607421875,2.37660796875],
+  "bootstrap_replicates":300,
+  "classification":"MODEL_ESTIMATE / OFFLINE POLICY EVALUATION"
+}
