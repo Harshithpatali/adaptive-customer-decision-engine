@@ -36,7 +36,7 @@ jobs:
       - name: Install research dependencies
         run: pip install -r requirements.txt
 
-      - name: Run advanced policy research
+      - name: Validate Python modules\n        run: python -m compileall -q dashboard src training\n\n      - name: Run advanced policy research
         env:
           BOOTSTRAP: ${{ github.event.inputs.bootstrap || '200' }}
           FOLDS: ${{ github.event.inputs.folds || '5' }}
