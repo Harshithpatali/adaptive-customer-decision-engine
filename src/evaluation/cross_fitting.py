@@ -15,6 +15,7 @@ def cross_fit_potential_outcomes(
     estimator_factory: Callable[[], object],
     n_splits: int = 5,
     random_state: int = 42,
+    prediction_method: str = "predict_proba",
 ) -> tuple[pd.DataFrame, dict[str, float]]:
     """Cross-fitted nuisance outcome predictions m_t(X).
 
@@ -41,6 +42,12 @@ def cross_fit_potential_outcomes(
                 raise ValueError(f"Insufficient observations for action {action!r} in a cross-fit fold")
             model = estimator_factory()
             model.fit(tr.loc[mask], yy.loc[mask])
-            pred.loc[valid_idx, action] = model.predict_proba(va)[:, 1]
+            if prediction_method == "predict_proba":
+                values = model.predict_proba(va)[:, 1]
+            elif prediction_method == "predict":
+                values = model.predict(va)
+            else:
+                raise ValueError("prediction_method must be 'predict_proba' or 'predict'")
+            pred.loc[valid_idx, action] = np.asarray(values, dtype=float)
 
     return pred, prop
