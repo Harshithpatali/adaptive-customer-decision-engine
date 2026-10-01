@@ -1,7 +1,9 @@
 import os, json
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from typing import Any, Dict
 from src.decision_engine.engine import DecisionEngine
+from src.explain.groq_explainer import explain_findings
 
 MODEL_DIR = os.getenv("ACDX_MODEL_DIR", "models/production")
 app = FastAPI(title="ACDX — Adaptive Customer Decision Engine", version="2.0.0")
@@ -32,3 +34,11 @@ def decision(c: Customer):
 @app.post("/predict")
 def predict(c: Customer):
     return engine.predict(c.model_dump())
+
+
+class ExplanationRequest(BaseModel):
+    evidence: Dict[str, Any]
+
+@app.post("/explain")
+def explain(req: ExplanationRequest):
+    return explain_findings(req.evidence)
