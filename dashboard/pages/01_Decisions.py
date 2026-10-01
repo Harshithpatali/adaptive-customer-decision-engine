@@ -26,6 +26,7 @@ if run:
         l,rcol=st.columns(2)
         with l: st.markdown("**Expected value by action**"); st.bar_chart(df["Utility"])
         with rcol: st.markdown("**Uplift signal**"); st.bar_chart(df["Uplift"].drop(index="No E-Mail",errors="ignore"))
+        st.markdown("**How to read response probability:** each value is the modeled probability of a response *if this specific action is sent*. These are separate counterfactual response probabilities, not a probability distribution across actions, so they are **not expected to sum to 100%**.")
         st.dataframe(df.style.format({"Response probability":"{:.2%}","Conditional spend":"{:.2f}","Expected revenue":"{:.3f}","Utility":"{:.3f}","Uplift":"{:.2%}"}),use_container_width=True)
         st.info(f"**Why {action}?** The frozen production policy selects the action with the highest modeled utility. The margin to the next-best action is {margin:.3f}.")
         st.caption("Expected revenue is modeled response probability × modeled conditional spend. It is not causal incremental revenue; uplift is shown separately.")
