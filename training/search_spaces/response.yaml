@@ -1,0 +1,14 @@
+response_model_search:
+  selected_model: xgboost
+  objective: validation_roc_auc
+  test_set_used_for_selection: false
+  class_balancing: none
+  synthetic_oversampling: false
+  candidates:
+    - logistic_regression
+    - random_forest
+    - extra_trees
+    - hist_gradient_boosting
+    - xgboost
+    - lightgbm
+    - catboost
