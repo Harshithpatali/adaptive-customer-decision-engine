@@ -1,0 +1,9 @@
+{
+  "classification":"SIMULATION",
+  "note":"Offline sequential simulation using frozen model estimates on held-out randomized customers; not observed production performance.",
+  "results":{
+    "thompson_sampling":{"algorithm":"thompson_sampling","rounds":500,"cumulative_reward":576.708933799161,"cumulative_regret":113.55462391798685,"action_allocation":{"No E-Mail":61,"Womens E-Mail":146,"Mens E-Mail":293}},
+    "epsilon_greedy":{"algorithm":"epsilon_greedy","rounds":500,"cumulative_reward":632.6175218352344,"cumulative_regret":57.64603588191309,"action_allocation":{"No E-Mail":25,"Womens E-Mail":21,"Mens E-Mail":454},"exploration_rate":0.1},
+    "linucb":{"algorithm":"linucb","rounds":500,"cumulative_reward":624.0131555589082,"cumulative_regret":66.25040215823921,"action_allocation":{"No E-Mail":28,"Womens E-Mail":116,"Mens E-Mail":356}}
+  }
+}
