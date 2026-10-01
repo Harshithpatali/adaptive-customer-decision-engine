@@ -32,9 +32,14 @@ econ = read_csv("reports/business/campaign_economics.csv")
 effects = read_csv("reports/statistics/experiment_effects.csv")
 manifest = {}
 mp = ROOT / "reports/statistics/experiment_manifest.json"
+research_manifest = {}
+rmp = ROOT / "reports/advanced_policy/research_manifest.json"
 if mp.exists():
     import json
     manifest = json.loads(mp.read_text())
+if rmp.exists():
+    import json
+    research_manifest = json.loads(rmp.read_text())
 
 hero("Decision Intelligence Center","Causal experimentation + machine learning + revenue optimization + individualized decisioning",["RANDOMIZED EXPERIMENT","UPLIFT MODELING","VALUE OPTIMIZATION","PRODUCTION API"])
 
@@ -59,6 +64,24 @@ metric_card("Experiment population",f"{total:,}","Randomized Hillstrom populatio
 metric_card("Observed spend","$"+f"{total_spend:,.0f}","Across all experiment arms")
 metric_card("Observed net value","$"+f"{net_value:,.0f}","After configured campaign cost")
 metric_card("Conversions",f"{conv:,}","Observed experiment outcome")
+
+st.markdown("### Decision intelligence layers")
+r1, r2, r3, r4 = st.columns(4)
+with r1:
+    metric_card("Experimental", "Randomized", "Average treatment effects")
+with r2:
+    metric_card("Production", "Frozen", "XGBoost + T-Learner + LightGBM")
+with r3:
+    metric_card("Research", "Causal", "Cross-fitting + DR + S/T/X")
+with r4:
+    metric_card(
+        "Research run",
+        "{} folds / {} bootstrap".format(
+            research_manifest.get("cross_fit_folds", "n/a"),
+            research_manifest.get("bootstrap_replicates", "n/a"),
+        ),
+        "Offline research artifact",
+    )
 
 st.markdown("### What the experiment measured")
 if not effects.empty:
