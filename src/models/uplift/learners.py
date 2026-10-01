@@ -6,7 +6,7 @@ from typing import Any, Callable
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
-from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 
 
 @dataclass
@@ -137,3 +137,37 @@ def uplift_metrics(y: np.ndarray, treatment: np.ndarray, uplift: np.ndarray, top
         out[f"uplift_at_{int(f*100)}pct"] = float(curve.iloc[idx]["uplift_gain"])
     out["auuc"] = float(np.trapezoid(curve["uplift_gain"].to_numpy(), curve["fraction"].to_numpy()))
     return out
+
+
+def cross_fitted_uplift_scores(
+    X: pd.DataFrame,
+    treatment: pd.Series,
+    y: pd.Series,
+    treatment_label: str,
+    learner: str,
+    estimator_factory: Callable[[], Any],
+    effect_estimator_factory: Callable[[], Any] | None = None,
+    n_splits: int = 5,
+    random_state: int = 42,
+) -> np.ndarray:
+    """Generate strictly out-of-fold uplift scores for learner comparison."""
+    mask = treatment.isin([treatment_label, "No E-Mail"]).to_numpy()
+    Xp = X.loc[mask].reset_index(drop=True)
+    tp = treatment.loc[mask].reset_index(drop=True)
+    yp = y.loc[mask].reset_index(drop=True)
+    scores = np.full(len(Xp), np.nan, dtype=float)
+    splitter = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+    for train_idx, valid_idx in splitter.split(Xp, tp):
+        if learner == "S-Learner":
+            model = SLearner(estimator_factory)
+        elif learner == "T-Learner":
+            model = TLearner(estimator_factory)
+        elif learner == "X-Learner":
+            model = XLearner(estimator_factory, effect_estimator_factory)
+        else:
+            raise ValueError(f"Unknown learner: {learner}")
+        model.fit(Xp.iloc[train_idx], tp.iloc[train_idx], yp.iloc[train_idx], treatment_label, "No E-Mail")
+        scores[valid_idx] = model.predict_uplift(Xp.iloc[valid_idx])
+    if np.isnan(scores).any():
+        raise RuntimeError("Cross-fitted uplift scores contain missing values")
+    return scores
