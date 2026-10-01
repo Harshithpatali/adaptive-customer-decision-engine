@@ -115,15 +115,28 @@ def main():
     stability_X = X.reset_index(drop=True).iloc[: min(1000, len(X))].copy()
     stability_actions = ACTIONS
     def fit_predict_values(frame, idx, action):
+        # Bootstrap each action's potential-outcome model from the rows assigned
+        # to that action. The response classifier is intentionally not refit here:
+        # decision stability is defined on monetary expected spend minus cost.
         boot = frame.iloc[idx]
         boot_t = treatment.reset_index(drop=True).iloc[idx]
-        boot_y = y.reset_index(drop=True).iloc[idx]
         boot_spend = df["spend"].reset_index(drop=True).iloc[idx]
         mask = boot_t.eq(action).to_numpy()
-        response = estimator_factory()
-        response.fit(boot.loc[mask], boot_y.loc[mask])
+
+        # A naive bootstrap can occasionally draw zero/one observations from a
+        # treatment arm. Fall back to that arm's full sample for a valid,
+        # reproducible potential-outcome estimate rather than fitting an
+        # ill-posed model.
+        if int(mask.sum()) < 2:
+            full_mask = treatment.eq(action).to_numpy()
+            train_X = X.reset_index(drop=True).loc[full_mask]
+            train_y = spend.reset_index(drop=True).loc[full_mask]
+        else:
+            train_X = boot.loc[mask]
+            train_y = boot_spend.loc[mask]
+
         value = value_estimator_factory()
-        value.fit(boot.loc[mask], boot_spend.loc[mask])
+        value.fit(train_X, train_y)
         return np.maximum(0.0, value.predict(stability_X)) - costs[action]
     stability = bootstrap_action_stability(stability_X, stability_actions, fit_predict_values, args.bootstrap, seed=42)
     stability.to_csv(OUT / "decision_stability.csv", index=False)
