@@ -31,7 +31,7 @@ hero(
     ["S / T / X LEARNERS", "CROSS-FITTING", "DOUBLY ROBUST", "STABILITY", "CAUSAL VALUE", "FRONTIER"],
 )
 
-if not UPLIFT.exists() or not DR.exists() or not FRONTIER.exists():
+if not UPLIFT.exists() or not DR.exists() or not FRONTIER.exists() or not REPORT.exists():
     st.warning("Advanced research results are not committed yet. Run the Advanced Policy Research workflow.")
     if not LEGACY.exists():
         st.stop()
