@@ -18,6 +18,7 @@ STABILITY = ADV / "decision_stability.csv"
 SCORES = ADV / "causal_incremental_scores.csv"
 FRONTIER = ADV / "policy_frontier.csv"
 MANIFEST = ADV / "research_manifest.json"
+REPORT = ADV / "final_report.md"
 
 CAL = ROOT / "reports/model_comparison/calibration.csv"
 LEGACY = ROOT / "reports/policy/advanced_policy_metrics.json"
