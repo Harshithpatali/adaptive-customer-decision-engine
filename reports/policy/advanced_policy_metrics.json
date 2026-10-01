@@ -1,0 +1,89 @@
+{
+  "evaluation_population": 9600,
+  "source_split": "test",
+  "uplift": {
+    "Mens E-Mail": {
+      "qini_area": 42.658948685857325,
+      "auuc": 0.004443640488110138,
+      "uplift_at_20pct": 0.0037546933667083854,
+      "curve": [
+        {"target_fraction":0.0001,"incremental_conversion":0.0},
+        {"target_fraction":0.05,"incremental_conversion":0.000313},
+        {"target_fraction":0.1,"incremental_conversion":0.001877},
+        {"target_fraction":0.15,"incremental_conversion":0.00219},
+        {"target_fraction":0.2,"incremental_conversion":0.003755},
+        {"target_fraction":0.25,"incremental_conversion":0.00438},
+        {"target_fraction":0.3,"incremental_conversion":0.003442},
+        {"target_fraction":0.35,"incremental_conversion":0.003755},
+        {"target_fraction":0.4,"incremental_conversion":0.004068},
+        {"target_fraction":0.45,"incremental_conversion":0.004068},
+        {"target_fraction":0.5,"incremental_conversion":0.005006},
+        {"target_fraction":0.55,"incremental_conversion":0.005319},
+        {"target_fraction":0.6,"incremental_conversion":0.005945},
+        {"target_fraction":0.65,"incremental_conversion":0.005319},
+        {"target_fraction":0.7,"incremental_conversion":0.005632},
+        {"target_fraction":0.75,"incremental_conversion":0.005632},
+        {"target_fraction":0.8,"incremental_conversion":0.005632},
+        {"target_fraction":0.85,"incremental_conversion":0.005632},
+        {"target_fraction":0.9,"incremental_conversion":0.006571},
+        {"target_fraction":0.95,"incremental_conversion":0.006884},
+        {"target_fraction":1.0,"incremental_conversion":0.006884}
+      ]
+    },
+    "Womens E-Mail": {
+      "qini_area": 27.658624090587047,
+      "auuc": 0.002881106676102818,
+      "uplift_at_20pct": 0.0021761928095905417,
+      "curve": [
+        {"target_fraction":0.0001,"incremental_conversion":0.0},
+        {"target_fraction":0.05,"incremental_conversion":0.000934},
+        {"target_fraction":0.1,"incremental_conversion":0.001556},
+        {"target_fraction":0.15,"incremental_conversion":0.001242},
+        {"target_fraction":0.2,"incremental_conversion":0.002176},
+        {"target_fraction":0.25,"incremental_conversion":0.00155},
+        {"target_fraction":0.3,"incremental_conversion":0.002174},
+        {"target_fraction":0.35,"incremental_conversion":0.002173},
+        {"target_fraction":0.4,"incremental_conversion":0.002484},
+        {"target_fraction":0.45,"incremental_conversion":0.002796},
+        {"target_fraction":0.5,"incremental_conversion":0.003108},
+        {"target_fraction":0.55,"incremental_conversion":0.00342},
+        {"target_fraction":0.6,"incremental_conversion":0.004043},
+        {"target_fraction":0.65,"incremental_conversion":0.004042},
+        {"target_fraction":0.7,"incremental_conversion":0.004042},
+        {"target_fraction":0.75,"incremental_conversion":0.004041},
+        {"target_fraction":0.8,"incremental_conversion":0.004664},
+        {"target_fraction":0.85,"incremental_conversion":0.003725},
+        {"target_fraction":0.9,"incremental_conversion":0.004036},
+        {"target_fraction":0.95,"incremental_conversion":0.003723},
+        {"target_fraction":1.0,"incremental_conversion":0.003096}
+      ]
+    }
+  },
+  "policy_value_curve": [
+    {"target_fraction":0.05,"policy_value":1.146488},
+    {"target_fraction":0.1,"policy_value":1.231665},
+    {"target_fraction":0.15,"policy_value":1.228191},
+    {"target_fraction":0.2,"policy_value":1.260724},
+    {"target_fraction":0.25,"policy_value":1.31625},
+    {"target_fraction":0.3,"policy_value":1.383412},
+    {"target_fraction":0.35,"policy_value":1.322239},
+    {"target_fraction":0.4,"policy_value":1.596587},
+    {"target_fraction":0.45,"policy_value":1.732955},
+    {"target_fraction":0.5,"policy_value":1.785537},
+    {"target_fraction":0.55,"policy_value":1.634654},
+    {"target_fraction":0.6,"policy_value":1.716941},
+    {"target_fraction":0.65,"policy_value":1.550715},
+    {"target_fraction":0.7,"policy_value":1.610596},
+    {"target_fraction":0.75,"policy_value":1.666531},
+    {"target_fraction":0.8,"policy_value":1.723922},
+    {"target_fraction":0.85,"policy_value":1.72291},
+    {"target_fraction":0.9,"policy_value":1.749609},
+    {"target_fraction":0.95,"policy_value":1.763078},
+    {"target_fraction":1.0,"policy_value":1.716059}
+  ],
+  "treatment_effect_distribution": {
+    "Mens E-Mail": {"0.0":-0.007947,"0.1":0.001274,"0.25":0.002786,"0.5":0.004722,"0.75":0.007243,"0.9":0.010292,"1.0":0.026566},
+    "Womens E-Mail": {"0.0":-0.012153,"0.1":-0.000785,"0.25":0.000723,"0.5":0.002223,"0.75":0.004261,"0.9":0.0064,"1.0":0.019242}
+  },
+  "baseline_policy_value": {"No Email":1.013977,"Treat all — Mens":1.416029,"Treat all — Womens":1.177532}
+}
