@@ -165,6 +165,82 @@ def main():
     print(json.dumps(manifest, indent=2))
 
 
+def write_final_report(df, learner_df, dr, stability, frontier, args):
+    """Write a human-readable report from the exact generated research artifacts."""
+    best = frontier.loc[frontier["total_net_incremental_value"].idxmax()]
+    mean_stability = float(stability["decision_stability"].mean())
+    high_stability = float((stability["decision_stability"] >= 0.80).mean())
+    lines = [
+        "# ACDX Advanced Policy Evaluation — Research Report",
+        "",
+        "## Executive summary",
+        "",
+        "This report summarizes the latest reproducible offline causal-policy research run.",
+        "It is **research evidence**, not realized production revenue and not a replacement for the frozen production inference stack.",
+        "",
+        f"- Dataset: **{len(df):,} customers**",
+        f"- Cross-fitting: **{args.folds} folds**",
+        f"- Bootstrap decision-stability refits: **{args.bootstrap:,}**",
+        "- Policy evaluation: **doubly robust, monetary spend/value scale**",
+        "- Production artifacts modified: **No**",
+        "",
+        "## 1. S / T / X learner comparison",
+        "",
+        "The learners are evaluated out-of-fold against the randomized no-email control.",
+        "",
+        "| Treatment | Learner | Qini | AUUC | Uplift @ 20% |",
+        "|---|---|---:|---:|---:|",
+    ]
+    for _, row in learner_df.iterrows():
+        lines.append(f"| {row["treatment"]} | {row["model"]} | {row["qini"]:.2f} | {row["auuc"]:.5f} | {row["uplift_at_20pct"]:.2%} |")
+    lines += [
+        "",
+        "## 2. Doubly robust policy evaluation",
+        "",
+        f"- Estimated policy value: **{dr["value"]:.3f}**",
+        f"- 95% confidence interval: **{dr["ci_low"]:.3f} to {dr["ci_high"]:.3f}**",
+        f"- Standard error: **{dr["standard_error"]:.3f}**",
+        f"- Effective sample size: **{dr["effective_sample_size"]:,.1f}**",
+        "",
+        "This is a cross-fitted offline estimate on randomized data. It should not be described as observed production revenue.",
+        "",
+        "## 3. Causal incremental-value frontier",
+        "",
+        "| Contact fraction | Actual contact rate | Contacts | Mean incremental value | Total net incremental value |",
+        "|---:|---:|---:|---:|---:|",
+    ]
+    for _, row in frontier.iterrows():
+        lines.append(f"| {row["contact_fraction"]:.0%} | {row["contact_rate"]:.1%} | {int(row["contacts"]):,} | ${row["mean_incremental_value"]:,.2f} | ${row["total_net_incremental_value"]:,.2f} |")
+    lines += [
+        "",
+        "### Frontier summary",
+        "",
+        f"- Highest evaluated modeled net incremental value: **${best["total_net_incremental_value"]:,.2f}**",
+        f"- At modeled contact rate: **{best["contact_rate"]:.1%}**",
+        f"- Modeled contacts: **{int(best["contacts"]):,}**",
+        f"- Marginal modeled net value/contact: **${best["marginal_net_value_per_contact"]:,.2f}**",
+        "",
+        "## 4. Individual decision stability",
+        "",
+        f"- Mean bootstrap decision stability: **{mean_stability:.1%}**",
+        f"- Share with stability ≥ 80%: **{high_stability:.1%}**",
+        f"- Evaluation population: **{len(stability):,} customers**",
+        "",
+        "Stability measures how consistently the selected action remains highest-value across bootstrap refits. It is a measure of decision consistency, not causal certainty.",
+        "",
+        "## 5. Evidence boundary",
+        "",
+        "**Randomized experimental evidence:** observed treatment/control comparisons.",
+        "",
+        "**Offline research estimates:** S/T/X uplift, cross-fitted potential outcomes, doubly robust policy value, bootstrap decision stability, and the causal value frontier.",
+        "",
+        "**Production:** frozen XGBoost response + T-Learner uplift + LightGBM conditional revenue + value-max policy. The production API does not run this research code.",
+        "",
+        "**Important:** modeled incremental value is not realized revenue. Treatment costs are policy assumptions stored in the production configuration.",
+        "",
+    ]
+    (OUT / "final_report.md").write_text("\n".join(lines), encoding="utf-8")
+
 if __name__ == "__main__":
     main()
 
