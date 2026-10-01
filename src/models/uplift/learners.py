@@ -75,6 +75,10 @@ class XLearner(_PairwiseBase):
     tau_c = mu_t(X) - Y for controls, followed by effect models and
     propensity-weighted combination of the two effect estimates.
     """
+    def __init__(self, estimator_factory: Callable[[], Any], effect_estimator_factory: Callable[[], Any] | None = None):
+        super().__init__(estimator_factory)
+        self.effect_estimator_factory = effect_estimator_factory or estimator_factory
+
     def _fit(self, X, treatment, y):
         self.mu_c = self.estimator_factory()
         self.mu_t = self.estimator_factory()
@@ -88,8 +92,8 @@ class XLearner(_PairwiseBase):
         tau_t = y.loc[t].to_numpy(dtype=float) - mu_c_t
         tau_c = mu_t_c - y.loc[c].to_numpy(dtype=float)
 
-        self.tau_t = self.estimator_factory()
-        self.tau_c = self.estimator_factory()
+        self.tau_t = self.effect_estimator_factory()
+        self.tau_c = self.effect_estimator_factory()
         self.tau_t.fit(X.loc[t], tau_t)
         self.tau_c.fit(X.loc[c], tau_c)
 
