@@ -69,8 +69,9 @@ def evaluate_policy_dr(
     n_splits: int = 5,
     bootstrap_reps: int = 1000,
     seed: int = 42,
+    prediction_method: str = "predict_proba",
 ) -> dict:
-    m, propensity = cross_fit_potential_outcomes(X, treatment, y, actions, estimator_factory, n_splits, seed)
+    m, propensity = cross_fit_potential_outcomes(X, treatment, y, actions, estimator_factory, n_splits, seed, prediction_method)
     estimate = doubly_robust_policy_value(y.to_numpy(), treatment.to_numpy(), policy.to_numpy(), m, propensity)
     influence = []
     yy = y.to_numpy(dtype=float); tt = treatment.to_numpy(); pp = policy.to_numpy()
