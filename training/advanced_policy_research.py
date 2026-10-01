@@ -192,15 +192,15 @@ def write_final_report(df, learner_df, dr, stability, frontier, args):
         "|---|---|---:|---:|---:|",
     ]
     for _, row in learner_df.iterrows():
-        lines.append(f"| {row["treatment"]} | {row["model"]} | {row["qini"]:.2f} | {row["auuc"]:.5f} | {row["uplift_at_20pct"]:.2%} |")
+        lines.append(f"| {row['treatment']} | {row['model']} | {row['qini']:.2f} | {row['auuc']:.5f} | {row['uplift_at_20pct']:.2%} |")
     lines += [
         "",
         "## 2. Doubly robust policy evaluation",
         "",
-        f"- Estimated policy value: **{dr["value"]:.3f}**",
-        f"- 95% confidence interval: **{dr["ci_low"]:.3f} to {dr["ci_high"]:.3f}**",
-        f"- Standard error: **{dr["standard_error"]:.3f}**",
-        f"- Effective sample size: **{dr["effective_sample_size"]:,.1f}**",
+        f"- Estimated policy value: **{dr['value']:.3f}**",
+        f"- 95% confidence interval: **{dr['ci_low']:.3f} to {dr['ci_high']:.3f}**",
+        f"- Standard error: **{dr['standard_error']:.3f}**",
+        f"- Effective sample size: **{dr['effective_sample_size']:,.1f}**",
         "",
         "This is a cross-fitted offline estimate on randomized data. It should not be described as observed production revenue.",
         "",
@@ -210,15 +210,15 @@ def write_final_report(df, learner_df, dr, stability, frontier, args):
         "|---:|---:|---:|---:|---:|",
     ]
     for _, row in frontier.iterrows():
-        lines.append(f"| {row["contact_fraction"]:.0%} | {row["contact_rate"]:.1%} | {int(row["contacts"]):,} | ${row["mean_incremental_value"]:,.2f} | ${row["total_net_incremental_value"]:,.2f} |")
+        lines.append(f"| {row['contact_fraction']:.0%} | {row['contact_rate']:.1%} | {int(row['contacts']):,} | ${row['mean_incremental_value']:,.2f} | ${row['total_net_incremental_value']:,.2f} |")
     lines += [
         "",
         "### Frontier summary",
         "",
-        f"- Highest evaluated modeled net incremental value: **${best["total_net_incremental_value"]:,.2f}**",
-        f"- At modeled contact rate: **{best["contact_rate"]:.1%}**",
-        f"- Modeled contacts: **{int(best["contacts"]):,}**",
-        f"- Marginal modeled net value/contact: **${best["marginal_net_value_per_contact"]:,.2f}**",
+        f"- Highest evaluated modeled net incremental value: **${best['total_net_incremental_value']:,.2f}**",
+        f"- At modeled contact rate: **{best['contact_rate']:.1%}**",
+        f"- Modeled contacts: **{int(best['contacts']):,}**",
+        f"- Marginal modeled net value/contact: **${best['marginal_net_value_per_contact']:,.2f}**",
         "",
         "## 4. Individual decision stability",
         "",
