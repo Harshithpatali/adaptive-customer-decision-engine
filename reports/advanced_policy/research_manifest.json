@@ -1,0 +1,14 @@
+{
+  "dataset_rows": 64000,
+  "actions": ["No E-Mail", "Womens E-Mail", "Mens E-Mail"],
+  "cross_fit_folds": 5,
+  "bootstrap_replicates": 50,
+  "uplift_models": ["S-Learner", "T-Learner", "X-Learner"],
+  "decision_stability_value": "bootstrap expected spend - treatment cost",
+  "policy_evaluator": "doubly_robust",
+  "classification": "OFFLINE RESEARCH / MODEL ESTIMATE",
+  "production_artifacts_modified": false,
+  "source_workflow_run": 36829950961,
+  "source_commit": "c6bcd009ec9c1785acc794827d10013e3a620b83",
+  "note": "Seeded from the latest successful 50-bootstrap research run. The corrected workflow defaults to 200 bootstrap refits for the next run."
+}
